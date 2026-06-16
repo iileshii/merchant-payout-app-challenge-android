@@ -56,6 +56,8 @@ fun ActivityRowPreview() {
                 amount = 1000,
                 currency = BalanceCurrency.EUR,
                 activityType = ActivityType.PAYOUT,
+                date = java.time.Instant.now(),
+                status = "completed"
             )
         )
     }

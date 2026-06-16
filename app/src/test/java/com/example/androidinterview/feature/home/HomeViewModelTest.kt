@@ -83,7 +83,7 @@ class FakeMerchantService(private val shouldFail: Boolean = false) : MerchantSer
             pendingBalance = 25000,
             currency = "GBP",
             activity = listOf(
-                ActivityItem("1", "deposit", 1000, "GBP", "date", "desc", "status")
+                ActivityItem("1", "deposit", 1000, "GBP", "2026-06-16T09:51:11Z", "desc", "status")
             )
         )
     }
@@ -92,7 +92,7 @@ class FakeMerchantService(private val shouldFail: Boolean = false) : MerchantSer
         if (shouldFail) throw Exception("Network error")
         return Activities(
             items = listOf(
-                ActivityItem("2", "payout", 2000, "GBP", "date", "payout", "status")
+                ActivityItem("2", "payout", 2000, "GBP", "2026-06-16T09:51:11Z", "payout", "status")
             ),
             nextCursor = "next_cursor",
             hasMore = true
