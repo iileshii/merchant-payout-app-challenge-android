@@ -218,21 +218,27 @@ fun HomeContentPreview() {
                         description = "Payment from Customer Qwe",
                         amount = 12345,
                         currency = BalanceCurrency.EUR,
-                        activityType = ActivityType.DEPOSIT
+                        activityType = ActivityType.DEPOSIT,
+                        date = java.time.Instant.now(),
+                        status = "completed"
                     ),
                     BalanceActivity(
                         id = "2",
                         description = "Payment from Customer Asd",
                         amount = 987654,
                         currency = BalanceCurrency.GBP,
-                        activityType = ActivityType.DEPOSIT
+                        activityType = ActivityType.DEPOSIT,
+                        date = java.time.Instant.now(),
+                        status = "completed"
                     ),
                     BalanceActivity(
                         id = "3",
                         description = "Payment from Customer Zxc",
                         amount = 150000,
                         currency = BalanceCurrency.GBP,
-                        activityType = ActivityType.DEPOSIT
+                        activityType = ActivityType.DEPOSIT,
+                        date = java.time.Instant.now(),
+                        status = "completed"
                     )
                 )
             ),

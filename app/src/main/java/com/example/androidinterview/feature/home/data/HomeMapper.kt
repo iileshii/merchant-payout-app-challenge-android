@@ -3,6 +3,7 @@ package com.example.androidinterview.feature.home.data
 import com.example.androidinterview.data.api.model.Activities
 import com.example.androidinterview.data.api.model.ActivityItem
 import com.example.androidinterview.data.api.model.MerchantResponse
+import java.time.Instant
 
 object HomeMapper {
 
@@ -26,7 +27,9 @@ object HomeMapper {
             description = item.description,
             amount = item.amount.toLong(),
             currency = currency,
-            activityType = mapActivityType(item.type)
+            activityType = mapActivityType(item.type),
+            date = Instant.parse(item.date),
+            status = item.status
         )
     }
 

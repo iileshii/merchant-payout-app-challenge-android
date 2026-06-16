@@ -19,15 +19,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.androidinterview.feature.home.ActivityListState
-import com.example.androidinterview.ui.theme.DividerGrey
-
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.androidinterview.feature.home.data.ActivityType
 import com.example.androidinterview.feature.home.data.BalanceActivity
 import com.example.androidinterview.feature.home.data.BalanceCurrency
 import com.example.androidinterview.ui.theme.AndroidInterviewTheme
+import com.example.androidinterview.ui.theme.DividerGrey
 
 @Composable
 fun ActivityListModal(
@@ -95,21 +94,27 @@ fun ActivityListModalPreview() {
                         description = "Payment from Customer",
                         amount = 12345,
                         currency = BalanceCurrency.GBP,
-                        activityType = ActivityType.DEPOSIT
+                        activityType = ActivityType.DEPOSIT,
+                        date = java.time.Instant.now(),
+                        status = "completed"
                     ),
                     BalanceActivity(
                         id = "2",
                         description = "Payout to Supplier",
                         amount = 125000,
                         currency = BalanceCurrency.EUR,
-                        activityType = ActivityType.PAYOUT
+                        activityType = ActivityType.PAYOUT,
+                        date = java.time.Instant.now(),
+                        status = "completed"
                     ),
                     BalanceActivity(
                         id = "3",
                         description = "Refund to Client",
                         amount = 1500,
                         currency = BalanceCurrency.GBP,
-                        activityType = ActivityType.REFUND
+                        activityType = ActivityType.REFUND,
+                        date = java.time.Instant.now(),
+                        status = "completed"
                     )
                 ),
                 hasMore = true
