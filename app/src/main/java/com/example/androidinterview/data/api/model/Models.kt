@@ -28,3 +28,26 @@ data class Activities(
     @SerialName("next_cursor") val nextCursor: String?,
     @SerialName("has_more") val hasMore: Boolean
 )
+
+@Serializable
+data class PayoutRequest(
+    @SerialName("amount") val amount: Int,
+    @SerialName("currency") val currency: String,
+    @SerialName("iban") val iban: String
+)
+
+@Serializable
+data class PayoutResponse(
+    @SerialName("id") val id: String,
+    @SerialName("status") val status: String,
+    @SerialName("amount") val amount: Int,
+    @SerialName("currency") val currency: String,
+    @SerialName("iban") val iban: String,
+    @SerialName("created_at") val createdAt: String
+)
+
+@Serializable
+data class ErrorResponse(
+    @SerialName("error") val error: String,
+    @SerialName("code") val code: String? = null
+)

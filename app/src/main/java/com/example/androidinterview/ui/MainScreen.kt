@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.androidinterview.feature.home.ui.HomeScreen
+import com.example.androidinterview.feature.payouts.ui.PayoutScreen
 import com.example.androidinterview.feature.transactions.ui.TransactionListScreen
 import com.example.androidinterview.ui.navigation.Screen
 
@@ -64,8 +65,7 @@ fun MainScreen() {
                 TransactionListScreen()
             }
             composable(Screen.Payouts.route) {
-                // PayoutsScreen() placeholder
-                Text("Payouts Screen Placeholder", modifier = Modifier.padding(innerPadding))
+                PayoutScreen()
             }
         }
     }
