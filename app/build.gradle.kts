@@ -73,6 +73,7 @@ dependencies {
     // Networking
     implementation(libs.okhttp)
     implementation(libs.retrofit)
+    implementation(libs.retrofit.kotlinx.serialization)
     implementation(libs.okhttp.mockwebserver)
 
     // Room
