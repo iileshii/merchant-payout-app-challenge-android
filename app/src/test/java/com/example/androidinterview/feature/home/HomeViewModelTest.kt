@@ -4,6 +4,8 @@ import com.example.androidinterview.data.api.MerchantService
 import com.example.androidinterview.data.api.model.Activities
 import com.example.androidinterview.data.api.model.ActivityItem
 import com.example.androidinterview.data.api.model.MerchantResponse
+import com.example.androidinterview.data.api.model.PayoutRequest
+import com.example.androidinterview.data.api.model.PayoutResponse
 import com.example.androidinterview.feature.home.data.BalanceCurrency
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -97,5 +99,13 @@ class FakeMerchantService(private val shouldFail: Boolean = false) : MerchantSer
             nextCursor = "next_cursor",
             hasMore = true
         )
+    }
+
+    override suspend fun createPayout(request: PayoutRequest): PayoutResponse {
+        throw NotImplementedError()
+    }
+
+    override suspend fun getPayout(id: String): PayoutResponse {
+        throw NotImplementedError()
     }
 }
