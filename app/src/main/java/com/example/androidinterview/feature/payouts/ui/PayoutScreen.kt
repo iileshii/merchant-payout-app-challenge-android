@@ -15,10 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidinterview.feature.payouts.PayoutViewModel
+import com.example.androidinterview.util.AndroidBiometricAuthenticator
 import com.example.androidinterview.util.AndroidDeviceManager
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,7 +30,8 @@ fun PayoutScreen() {
     val viewModel: PayoutViewModel = viewModel(
         factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return PayoutViewModel(AndroidDeviceManager(context)) as T
+                val authenticator = AndroidBiometricAuthenticator(context as FragmentActivity)
+                return PayoutViewModel(AndroidDeviceManager(context), authenticator) as T
             }
         }
     )

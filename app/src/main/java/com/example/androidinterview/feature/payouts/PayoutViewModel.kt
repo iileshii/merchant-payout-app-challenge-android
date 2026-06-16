@@ -7,6 +7,8 @@ import com.example.androidinterview.data.api.NetworkModule
 import com.example.androidinterview.data.api.model.ErrorResponse
 import com.example.androidinterview.data.api.model.PayoutRequest
 import com.example.androidinterview.feature.home.data.BalanceCurrency
+import com.example.androidinterview.util.BiometricAuthenticator
+import com.example.androidinterview.util.BiometricResult
 import com.example.androidinterview.util.DeviceManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,6 +43,7 @@ data class PayoutFormState(
 
 class PayoutViewModel(
     private val deviceManager: DeviceManager,
+    private val biometricAuthenticator: BiometricAuthenticator,
     private val merchantService: MerchantService = NetworkModule.merchantService
 ) : ViewModel() {
 
@@ -79,6 +82,44 @@ class PayoutViewModel(
             try {
                 // Convert decimal string to minor units (integer)
                 val amountInt = (currentState.amount.toDouble() * 100).toInt()
+
+                // Biometric check for payouts >= £1,000.00 (100,000 pence)
+                if (amountInt >= 100000) {
+                    when (val biometricResult = biometricAuthenticator.authenticate()) {
+                        is BiometricResult.Success -> { /* Continue */
+                        }
+
+                        is BiometricResult.NotEnrolled -> {
+                            _state.update {
+                                it.copy(
+                                    isLoading = false,
+                                    error = "Biometrics not set up. Please enable biometrics in device settings."
+                                )
+                            }
+                            return@launch
+                        }
+
+                        is BiometricResult.Cancelled -> {
+                            _state.update {
+                                it.copy(
+                                    isLoading = false,
+                                    error = "Biometric authentication was cancelled."
+                                )
+                            }
+                            return@launch
+                        }
+
+                        is BiometricResult.Error -> {
+                            _state.update {
+                                it.copy(
+                                    isLoading = false,
+                                    error = "Biometric error: ${biometricResult.message}"
+                                )
+                            }
+                            return@launch
+                        }
+                    }
+                }
 
                 merchantService.createPayout(
                     PayoutRequest(
