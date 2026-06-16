@@ -7,6 +7,7 @@ import com.example.androidinterview.data.api.NetworkModule
 import com.example.androidinterview.data.api.model.ErrorResponse
 import com.example.androidinterview.data.api.model.PayoutRequest
 import com.example.androidinterview.feature.home.data.BalanceCurrency
+import com.example.androidinterview.util.DeviceManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,6 +40,7 @@ data class PayoutFormState(
 }
 
 class PayoutViewModel(
+    private val deviceManager: DeviceManager,
     private val merchantService: MerchantService = NetworkModule.merchantService
 ) : ViewModel() {
 
@@ -82,7 +84,8 @@ class PayoutViewModel(
                     PayoutRequest(
                         amount = amountInt,
                         currency = currentState.currency.code,
-                        iban = currentState.iban.replace(" ", "").uppercase()
+                        iban = currentState.iban.replace(" ", "").uppercase(),
+                        deviceId = deviceManager.getDeviceId()
                     )
                 )
 

@@ -33,7 +33,8 @@ data class Activities(
 data class PayoutRequest(
     @SerialName("amount") val amount: Int,
     @SerialName("currency") val currency: String,
-    @SerialName("iban") val iban: String
+    @SerialName("iban") val iban: String,
+    @SerialName("device_id") val deviceId: String
 )
 
 @Serializable

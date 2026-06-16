@@ -13,13 +13,25 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidinterview.feature.payouts.PayoutViewModel
+import com.example.androidinterview.util.AndroidDeviceManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PayoutScreen(viewModel: PayoutViewModel = viewModel()) {
+fun PayoutScreen() {
+    val context = LocalContext.current
+    val viewModel: PayoutViewModel = viewModel(
+        factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return PayoutViewModel(AndroidDeviceManager(context)) as T
+            }
+        }
+    )
     val state by viewModel.state.collectAsState()
 
     Scaffold(
