@@ -5,6 +5,8 @@ import com.example.androidinterview.data.api.model.Activities
 import com.example.androidinterview.data.api.model.MerchantResponse
 import com.example.androidinterview.data.api.model.PayoutRequest
 import com.example.androidinterview.data.api.model.PayoutResponse
+import com.example.androidinterview.util.BiometricAuthenticator
+import com.example.androidinterview.util.BiometricResult
 import com.example.androidinterview.util.DeviceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -39,7 +41,7 @@ class PayoutViewModelTest {
 
     @Test
     fun `initial state is empty and invalid`() {
-        val viewModel = PayoutViewModel(FakeDeviceManager())
+        val viewModel = PayoutViewModel(FakeDeviceManager(), FakeBiometricAuthenticator())
         val state = viewModel.state.value
         assertEquals("", state.amount)
         assertEquals("", state.iban)
@@ -48,7 +50,7 @@ class PayoutViewModelTest {
 
     @Test
     fun `isValid is true when amount is positive and IBAN is valid`() {
-        val viewModel = PayoutViewModel(FakeDeviceManager())
+        val viewModel = PayoutViewModel(FakeDeviceManager(), FakeBiometricAuthenticator())
         viewModel.onAmountChange("100.00")
         viewModel.onIbanChange("GB29NWBK60161331926819")
         assertTrue(viewModel.state.value.isValid)
@@ -56,7 +58,7 @@ class PayoutViewModelTest {
 
     @Test
     fun `isValid is false when amount is zero or negative`() {
-        val viewModel = PayoutViewModel(FakeDeviceManager())
+        val viewModel = PayoutViewModel(FakeDeviceManager(), FakeBiometricAuthenticator())
         viewModel.onAmountChange("0")
         viewModel.onIbanChange("GB29NWBK60161331926819")
         assertFalse(viewModel.state.value.isValid)
@@ -67,7 +69,7 @@ class PayoutViewModelTest {
 
     @Test
     fun `isValid is false when IBAN is invalid`() {
-        val viewModel = PayoutViewModel(FakeDeviceManager())
+        val viewModel = PayoutViewModel(FakeDeviceManager(), FakeBiometricAuthenticator())
         viewModel.onAmountChange("100.00")
         viewModel.onIbanChange("INVALID_IBAN")
         assertFalse(viewModel.state.value.isValid)
@@ -75,7 +77,11 @@ class PayoutViewModelTest {
 
     @Test
     fun `initiatePayout success updates state with successAmount`() = runTest {
-        val viewModel = PayoutViewModel(FakeDeviceManager(), FakeMerchantService())
+        val viewModel = PayoutViewModel(
+            FakeDeviceManager(),
+            FakeBiometricAuthenticator(),
+            FakeMerchantService()
+        )
         viewModel.onAmountChange("100.00")
         viewModel.onIbanChange("GB29NWBK60161331926819")
 
@@ -96,7 +102,8 @@ class PayoutViewModelTest {
                 return super.createPayout(request)
             }
         }
-        val viewModel = PayoutViewModel(FakeDeviceManager(), fakeService)
+        val viewModel =
+            PayoutViewModel(FakeDeviceManager(), FakeBiometricAuthenticator(), fakeService)
         viewModel.onAmountChange("888.88")
         viewModel.onIbanChange("GB29NWBK60161331926819")
 
@@ -114,7 +121,11 @@ class PayoutViewModelTest {
                 return super.createPayout(request)
             }
         }
-        val viewModel = PayoutViewModel(FakeDeviceManager("test_device"), fakeService)
+        val viewModel = PayoutViewModel(
+            FakeDeviceManager("test_device"),
+            FakeBiometricAuthenticator(),
+            fakeService
+        )
         viewModel.onAmountChange("100.00")
         viewModel.onIbanChange("GB29NWBK60161331926819")
 
@@ -124,8 +135,40 @@ class PayoutViewModelTest {
     }
 
     @Test
+    fun `initiatePayout over 1000 requires biometric success`() = runTest {
+        val authenticator = FakeBiometricAuthenticator(BiometricResult.Success)
+        val viewModel = PayoutViewModel(FakeDeviceManager(), authenticator, FakeMerchantService())
+        viewModel.onAmountChange("1000.01")
+        viewModel.onIbanChange("GB29NWBK60161331926819")
+
+        viewModel.initiatePayout()
+
+        val state = viewModel.state.value
+        assertEquals("1000.01", state.successAmount)
+        assertNull(state.error)
+    }
+
+    @Test
+    fun `initiatePayout over 1000 fails if biometric cancelled`() = runTest {
+        val authenticator = FakeBiometricAuthenticator(BiometricResult.Cancelled)
+        val viewModel = PayoutViewModel(FakeDeviceManager(), authenticator, FakeMerchantService())
+        viewModel.onAmountChange("1000.01")
+        viewModel.onIbanChange("GB29NWBK60161331926819")
+
+        viewModel.initiatePayout()
+
+        val state = viewModel.state.value
+        assertNotNull(state.error)
+        assertEquals("Biometric authentication was cancelled.", state.error)
+    }
+
+    @Test
     fun `initiatePayout error updates state with error message`() = runTest {
-        val viewModel = PayoutViewModel(FakeDeviceManager(), FakeMerchantService(shouldFail = true))
+        val viewModel = PayoutViewModel(
+            FakeDeviceManager(),
+            FakeBiometricAuthenticator(),
+            FakeMerchantService(shouldFail = true)
+        )
         viewModel.onAmountChange("100.00")
         viewModel.onIbanChange("GB29NWBK60161331926819")
 
@@ -140,6 +183,11 @@ class PayoutViewModelTest {
 
 private class FakeDeviceManager(private val id: String = "fake_id") : DeviceManager {
     override fun getDeviceId(): String = id
+}
+
+private class FakeBiometricAuthenticator(private val result: BiometricResult = BiometricResult.Success) :
+    BiometricAuthenticator {
+    override suspend fun authenticate(): BiometricResult = result
 }
 
 open class FakeMerchantService(private val shouldFail: Boolean = false) : MerchantService {
